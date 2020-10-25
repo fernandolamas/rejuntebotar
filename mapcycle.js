@@ -1,6 +1,10 @@
 const rotacionMapasArray = [
+  "turbo_10b",
+  "datchurch",
+  "goldcoast",
   "monkey_l",
   "raiden5",
+  "serenity_r",
   "shutdown2",
   "phantom",
   "siege",
@@ -12,7 +16,6 @@ const rotacionMapasArray = [
   "high_flag",
   "mortality_l",
   "openfire_lowgrens",
-  "oppose2k1_lowgrens",
   "orbit_l3",
   "prolifique",
   "schtop",
@@ -21,15 +24,11 @@ const rotacionMapasArray = [
   "waterwar",
   "2fort",
   "chimkey_l",
-  "bases2k4",
   "2mesa3",
-  "decay_l",
-  "tempest_r3",
   "stowaway2",
-  "crossover2",
-  "congestus",
-  "bluetopia",
-  "opposition2"
+  "blutopia",
+  "mulch_trench_lg",
+  "chaos2_b2",
 ]; //Rotacion de mapas
 
 exports.rotacionMapasArray = rotacionMapasArray
