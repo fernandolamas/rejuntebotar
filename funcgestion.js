@@ -1,6 +1,11 @@
-module.exports = {
+const Compute = require("@google-cloud/compute");
+const compute = new Compute();
+const zone = compute.zone("southamerica-east1-b");
+const vm = zone.vm("tfctestbr");
+const { rcon } = require("./rconnectbr");
 
-  resetearRejunte: function resetearRejunte(state,message) {
+module.exports = {
+  resetearRejunte: function resetearRejunte(state, message) {
     if (
       state.rejunteArray != undefined &&
       state.rejunteArray != null &&
@@ -15,7 +20,13 @@ module.exports = {
       message.channel.send("El rejunte se reseteo");
     }
   },
-  
+
+  brretry: function brretry(serverbr){
+    console.log("doing br retry");
+    serverbr.rcon.connect();
+    serverbr.rcon.send("say Consulta los !teams")
+  },
+
   shuffle: function shuffle(message, state, client, Discord) {
     if (state.rejunteMaxSize === state.rejunteArray.length) {
       state.equipoAzul = [];
@@ -28,11 +39,11 @@ module.exports = {
       }
       while (!rojoLleno) {
         //que se pueda definir capitanes o mesclar los equipos
-  
+
         // Math.floor(Math.random() * 10)-3;     // returns a random integer from 0 to 9
         // Math.random() * 8;
         var random = Math.trunc(Math.random() * state.rejunteMaxSize);
-  
+
         if (!elegido[random] && !azulLleno) {
           state.equipoAzul.push(state.rejunteArray[random]);
           elegido[random] = true;
@@ -42,7 +53,7 @@ module.exports = {
             console.log("El azul está lleno");
           }
         }
-  
+
         if (!elegido[random] && !rojoLleno) {
           state.equipoRojo.push(state.rejunteArray[random]);
           elegido[random] = true;
@@ -53,16 +64,16 @@ module.exports = {
           }
         }
       }
-  
+
       this.teams(message, state, client, Discord);
-  
+
       if (state.rejuntesExtra) {
         state.timeoutMatch = setTimeout(this.agregarJugadoresEnMatch, 300000); //5 minutos
       }
     } else
       state.message.channel.send("No hay jugadores suficientes para mezclar");
   },
-  
+
   teams: function teams(message, state, client, Discord) {
     state.equipoAzulFinal = "";
     state.equipoAzulFinalRcon = "";
@@ -73,14 +84,14 @@ module.exports = {
       var usuarioAzulRcon = client.users.cache.get(state.equipoAzul[i]);
       state.equipoAzulFinalRcon += "\n" + usuarioAzulRcon.username + " ";
     }
-  
+
     var mensajeEmbed = new Discord.MessageEmbed()
       .setColor("#0652DD")
       .setTitle("**Equipo Azul**: ")
       .setDescription(state.equipoAzulFinal)
       .setThumbnail("https://imgur.com/9IO4Dcu.png");
     message.channel.send({ embed: mensajeEmbed });
-  
+
     state.equipoRojoFinal = "";
     state.equipoRojoFinalRcon = "";
     for (var i = 0; i < state.mitadDelTotalDeJugadores; i++) {
@@ -89,7 +100,7 @@ module.exports = {
       var usuarioRojoRcon = client.users.cache.get(state.equipoRojo[i]);
       state.equipoRojoFinalRcon += "\n" + usuarioRojoRcon.username + " ";
     }
-  
+
     mensajeEmbed = new Discord.MessageEmbed()
       .setColor("#EA2027")
       .setTitle("**Equipo Rojo**: ")
@@ -97,10 +108,9 @@ module.exports = {
       .setThumbnail("https://imgur.com/uHzrsGr.png");
     message.channel.send({ embed: mensajeEmbed });
   },
-  
+
   //match
-  
-  
+
   /*
   resetearMatch: function resetearMatch(state) {
     state.rejunteEnMatch = [];
@@ -139,7 +149,7 @@ module.exports = {
     }
     return rejunteEnMatchFinal;
   },
-  
+
   rotacionDeMapas: function rotacionDeMapas(state, message, Discord, mapas) {
     var seleccionDeRotacion = false;
     state.rotacionRandomArray = [];
@@ -152,37 +162,57 @@ module.exports = {
           mapas.rotacionMapasArray[eleccionRandom]
         )
       ) {
-        state.rotacionRandomArray.push(mapas.rotacionMapasArray[eleccionRandom]);
+        state.rotacionRandomArray.push(
+          mapas.rotacionMapasArray[eleccionRandom]
+        );
       }
       if (state.rotacionRandomArray.length === 4) seleccionDeRotacion = true;
     }
-  
+
     var misMapas = "";
     misMapas += "1⃣  `" + state.rotacionRandomArray[0] + "`\n";
     misMapas += "2⃣  `" + state.rotacionRandomArray[1] + "`\n";
     misMapas += "3⃣  `" + state.rotacionRandomArray[2] + "`\n";
     misMapas += "4⃣  `" + state.rotacionRandomArray[3] + "`\n";
     misMapas += "5⃣  `" + " Mezclar mapas " + "`\n";
-  
+
     const mensajeEmbed = new Discord.MessageEmbed()
       .setColor("#f1c40f")
       .setTitle("**Elige mapa**:")
       .setDescription(
         misMapas +
-          "\n*Cónectate:* :flag_br: steam://connect/34.95.222.217:27015/rjt"
+        "\n*Cónectate:* :flag_br: steam://connect/34.95.232.99:27015/rjt"
       );
-  
-    message.channel.send({ embed: mensajeEmbed })
-      .then(embedMessage => {
+
+    message.channel.send({ embed: mensajeEmbed }).then(embedMessage => {
+
       embedMessage.react("1⃣");
       embedMessage.react("2⃣");
       embedMessage.react("3⃣");
       embedMessage.react("4⃣");
       embedMessage.react("5⃣");
-    });
+      const filter = (reaction) => {
+        return reaction.emoji.name === "5⃣";
+      };
+
+      embedMessage.awaitReactions(filter, { max: 5, time: 15000, errors: ['time'] })
+        .then(collected => rotacionDeMapas(state, message, Discord, mapas))
+        .catch(collected => {
+          message.channel.send('15 segundos pasaron y votaron '+collected.size+'/4 jugadores, el bot no mezclará automáticamente los mapas');
+          err => console.error("surgio un error al no llegar a los 5 jugadores en el shuffle maps "+ err);
+        });
+
+
+    })
+      .catch(err => console.error("surgió un error mientras esperamos los votos del shufflemaps " + err));
   },
-    
-  mostrarJugadoresEnRejunte: function mostrarJugadoresEnRejunte(state, message, client, Discord) {
+
+  mostrarJugadoresEnRejunte: function mostrarJugadoresEnRejunte(
+    state,
+    message,
+    client,
+    Discord
+  ) {
     //usuariosEnRejunte();
     var jugadoresEnRejunte = "";
     if (state.rejunteArray.length > 0) {
@@ -191,9 +221,9 @@ module.exports = {
         var usuarioRejunte = client.users.cache.get(usuarioRejunteID);
         jugadoresEnRejunte += "\n" + usuarioRejunte.toString();
       }
-  
+
       //message.channel.send(jugadoresEnRejunte);
-  
+
       var mensajeEmbed = new Discord.MessageEmbed()
         .setColor("#2ecc71")
         .setTitle(this.usuariosEnRejunte(state))
@@ -204,7 +234,7 @@ module.exports = {
       message.channel.send("El rejunte está vacío");
     }
   },
-  
+
   usuariosEnRejunte: function usuariosEnRejunte(state) {
     return (
       "Usuarios en el rejunte `" +
@@ -214,8 +244,14 @@ module.exports = {
       "`"
     );
   },
-  
-  removerUsuarioDeRejunte: function removerUsuarioDeRejunte(id, state, message, client, Discord) {
+
+  removerUsuarioDeRejunte: function removerUsuarioDeRejunte(
+    id,
+    state,
+    message,
+    client,
+    Discord
+  ) {
     //Usado para !kick @mention -- !ban @mention
     var usuarioAKickear = id;
     state.rejunteAux = [];
@@ -229,7 +265,7 @@ module.exports = {
       for (var i = 0; i < state.rejunteAux.length; i++) {
         state.rejunteArray.push(state.rejunteAux[i]);
       }
-  
+
       if (state.equipoAzul.length > 0 && state.equipoRojo.length > 0) {
         state.equipoAzul = [];
         state.equipoRojo = [];
@@ -248,11 +284,27 @@ module.exports = {
       );
     }
   },
-    
+
   desbanearUsuario: function desbanearUsuario(message) {
     message.member.roles.remove("720436890146177074");
     //message.member.roles.remove(["719584586706976888"]);
     message.author.send("Ya estas desbaneado mogolico");
-  }
-  
-  }
+  },
+
+  tfcServerUp: function () {
+    vm.start(function (err, operation, apiResponse) {
+      console.log(err);
+      console.log(apiResponse);
+      console.log(operation);
+    });
+  },
+
+  tfcServerDown: function () {
+    vm.stop(function (err, operation, apiResponse) {
+      console.log(err);
+      console.log(apiResponse);
+      console.log(operation);
+    });
+  },
+};
+
