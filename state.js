@@ -14,6 +14,13 @@ var equipoRojoFinalRcon = "";
 
 var mitadDelTotalDeJugadores = rejunteMaxSize / 2;
 
+var doBrRetry;
+var doShutDownServer;
+
+var timeoutAddStart; // milliseconds
+const timeoutAddDelay = 1800000;
+var timeoutAddElapsed;
+var timeoutAddRemaining;
 var timeoutAdd;
 var timeoutBan;
 var timeoutMatch;
@@ -23,6 +30,7 @@ var rejuntesExtra = false; //If true, permite multiples colas (hasta 2 xd)
 var rotacionRandomArray = [];
 
 module.exports = {
+  doBrRetry,
   rejunteMaxSize,
   rejunteArray,
   rejunteEnMatch,
@@ -35,6 +43,10 @@ module.exports = {
   equipoAzulFinalRcon,
   equipoRojoFinalRcon,
   mitadDelTotalDeJugadores,
+  timeoutAddStart,
+  timeoutAddDelay,
+  timeoutAddElapsed,
+  timeoutAddRemaining,
   timeoutAdd,
   timeoutBan,
   timeoutMatch,
