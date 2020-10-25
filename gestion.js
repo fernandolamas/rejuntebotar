@@ -47,7 +47,7 @@ module.exports = {
     }
     if (message.content.includes("!maxsize")) {
       if (message.member.roles.cache.some(role => role.name === rolRejuntero)) {
-        var maxSize = /2|4|6|8|16/;
+        var maxSize = /1|2|4|6|8|16/;
 
         if (maxSize.test(message.content)) {
           var newMaxSize = maxSize.exec(message.content);
@@ -124,13 +124,16 @@ module.exports = {
     }
 
     if (message.content === "!timeleft") {
-      setInterval(function() {
-        console.log('Time left: '+getTimeLeft(timeout)+'s');
-    }, 2000);
-    
-    function getTimeLeft(timeout) {
-        return Math.ceil((state.timeoutAdd._idleStart + state.timeoutAdd_idleTimeout - Date.now()) / 1000);
-    }
+
+      state.timeoutAddElapsed = Date.now() - state.timeoutAddStart;
+
+      state.timeoutAddRemaining = state.timeoutAddDelay - state.timeoutAddElapsed;
+
+      var minutes = Math.floor(state.timeoutAddRemaining / 60000);
+      var seconds = ((state.timeoutAddRemaining % 60000) / 1000).toFixed(0);
+
+      message.channel.send("Faltan: " + minutes + ":" + (seconds < 10 ? '0' : '') + seconds + " minutos para el proximo rejunte");
+
     }
   }
 
