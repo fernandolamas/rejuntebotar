@@ -4,9 +4,13 @@ module.exports = {
   emilio: message => {
     if (message.content === "emilio") {
       const emoji =
-        "<:emilio:" +
-        message.guild.emojis.cache.find(emoji => emoji.name === "emilio") +
-        ">";
+        "<:bestia:" +
+        message.guild.emojis.cache.find(emoji => emoji.name === "bestia") +
+        ">"+
+	":beers:" +
+	"<:emilio:" +
+	message.guild.emojis.cache.find(emoji => emoji.name === "emilio") +
+	">";
       message.channel.send(emoji);
     }
   },
@@ -41,8 +45,9 @@ module.exports = {
       switch (quotes) {
         case "pitfall":
           message.channel.send("pitfall es una mierda a jason solo le gusta");
-          break;
-      }
+          break;}
+
+
     }
   },
   
@@ -55,7 +60,5 @@ module.exports = {
         }
     }
   }
-    
-  
 };
 
