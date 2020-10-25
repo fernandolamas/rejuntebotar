@@ -2,7 +2,7 @@ const { rcon } = require("./rconnectbr");
 let enviado = true;
 
 module.exports = {
-  cmd: (message, serverbr, serverar, equipoAzulFinalRcon, equipoRojoFinalRcon, funcgestion, state, client, Discord) => {
+  cmd: (message, serverbr, equipoAzulFinalRcon, equipoRojoFinalRcon, funcgestion, state, client, Discord) => {
     if (message.content.includes("!rcon")) {
       var rconArgs = message.content.match(/(?<=rcon )\w{0,18}/);
       switch (rconArgs[0]) {
@@ -33,34 +33,9 @@ module.exports = {
               break;
             }
           }
-        case "arteams":
-          message.channel.send("Respondiendo teams");
-          if (equipoAzulFinalRcon !== "" && equipoRojoFinalRcon !== "") {
-            serverar.rcon.send("say Equipo azul: " + equipoAzulFinalRcon);
-            serverar.rcon.send("say Equipo rojo: " + equipoRojoFinalRcon);
-            break;
-          } else {
-            serverar.rcon.send("say No hay equipos en este momento");
-            break;
-          }
-        case "arretry":
-          serverar.rcon.connect();
-          message.channel.send("Reconectando ar");
-          break;
         case "brretry":
           serverbr.rcon.connect();
           message.channel.send("Reconectando br")
-          break;
-        case "arshuffle":
-          funcgestion.shuffle(message, state, client, Discord);
-          if (equipoAzulFinalRcon !== "" && equipoRojoFinalRcon !== "") {
-            serverar.rcon.send("say Equipo azul: " + equipoAzulFinalRcon);
-            serverar.rcon.send("say Equipo rojo: " + equipoRojoFinalRcon);
-            break;
-          } else {
-            serverar.rcon.send("say No hay equipos en este momento");
-          }
-          message.channel.send("Mezclando equipos...");
           break;
         case "brshuffle":
           funcgestion.shuffle(message, state, client, Discord);
