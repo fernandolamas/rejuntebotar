@@ -13,7 +13,7 @@ module.exports = {
     var eligeAzul;
     var eligeRojo;
     var eligioPrimero;
-    if (message.content.includes("!capitan azul")) {
+    if (message.content.includes("!cap azul")) {
       if (message.member.roles.cache.some(role => role.name === rolRejuntero)) {
         {
           if (rejunteArray.length === rejunteMaxSize) {
@@ -43,7 +43,7 @@ module.exports = {
       }
     }
 
-    if (message.content.includes("!capitan rojo")) {
+    if (message.content.includes("!cap rojo")) {
       if (message.member.roles.cache.some(role => role.name === rolRejuntero)) {
         if (rejunteArray.length === rejunteMaxSize) {
           equipoRojo = [];
@@ -88,7 +88,7 @@ module.exports = {
         if (message.content.includes("!elegir")) {
       //obtener el equipo de la persona que esta eligiendo
 
-      if (rejunteArray.lenght >= 8) {
+      if (rejunteArray.length >= 4) {
         if (message.author.id === capitanAzul && eligeAzul) {
           if (rejunteArray.includes(message.mentions.users.first().id)) {
             message.channel.send(
@@ -137,7 +137,7 @@ module.exports = {
           message.channel.send("No es tu turno de elegir");
         }
       } else
-        message.channel.send("Solo se permite elegir en partidas de 4v4 o más");
+        message.channel.send("Solo se permite elegir en partidas de 2v2 o más");
     }
 
   }
